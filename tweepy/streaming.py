@@ -167,7 +167,7 @@ class ReadBuffer(object):
                 return self._pop(length)
             if self._stream.closed:
                 raise ConnectionClosed()
-            read_len = max(self._chunk_size, length - len(self._buffer))
+            read_len = min(self._chunk_size, length - len(self._buffer))
             self._buffer += self._stream.read(read_len, decode_content=True).decode("ascii")
 
     def read_line(self, sep='\n'):
@@ -211,7 +211,7 @@ class Stream(object):
         # per tweet. Values higher than ~1kb will increase latency by waiting
         # for more data to arrive but may also increase throughput by doing
         # fewer socket read calls.
-        self.chunk_size = options.get("chunk_size",  512)
+        self.chunk_size = options.get("chunk_size",  1)
 
         self.verify = options.get("verify", True)
 
